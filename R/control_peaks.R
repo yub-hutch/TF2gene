@@ -49,9 +49,9 @@ get_control_peaks <- function(meta_gene = grch38, chr_lens = hg38_chr_lens, peak
 }
 
 
-#' Write Peaks to BED File
+#' Write Control Peaks to BED File
 #'
-#' This function converts a tibble of peaks into BED format and writes it to a specified file.
+#' This function converts a tibble of control peaks into BED format and writes it to a specified file.
 #'
 #' @param peak A tibble containing peak data with columns: 'chr', 'start', and 'end'.
 #' @param fbed A character string specifying the file path to write the BED file.
@@ -59,7 +59,7 @@ get_control_peaks <- function(meta_gene = grch38, chr_lens = hg38_chr_lens, peak
 #' @return None. The function writes the BED file to the specified path.
 #' @export
 #'
-write_peak_to_bed <- function(peak, fbed) {
+write_control_peak_to_bed <- function(peak, fbed) {
   peak$start = peak$start - 1 # bed file is 0-based
   peak$chr = paste0('chr', peak$chr)
   peak$name = paste0('null', seq(nrow(peak)))
