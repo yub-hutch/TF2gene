@@ -3,42 +3,22 @@
 #' This function calculates the distance between the center of peaks and the nearest gene transcription start site (TSS)
 #' if the distance is less than a specified maximum distance.
 #'
-#' @param peak A tibble containing peak data with columns: 'chr', 'start', 'end', and 'openness'.
-#' @param meta_gene A tibble containing gene metadata with columns: 'id', 'symbol', 'biotype', 'chr', 'start', 'end', 'strand', 'tss'. For example, grch38.
-#' @param max_distance A numeric value specifying the maximum distance to consider (default is 500,000).
+#' @param peak A tibble containing peak data with columns: 'chr', 'start', and 'end'.
 #' @param ncores An integer specifying the number of cores to use for parallel processing.
-#' @param verbose A logical value indicating whether to print progress messages.
+#' @param meta_gene A tibble containing gene metadata with columns: 'id', 'symbol', 'biotype', 'chr', 'start', 'end', 'strand', 'tss' (default is grch38).
+#' @param max_distance A numeric value specifying the maximum distance to consider (default is 500,000).
+#' @param verbose A logical value indicating whether to print progress messages (default is TRUE).
 #'
 #' @return A tibble with columns: 'gene', 'peak', and 'distance'.
 #' @export
 #'
-#' @examples
-#' peak_data <- tibble::tibble(
-#'   chr = c("1", "1", "X"),
-#'   start = c(100, 200, 300),
-#'   end = c(150, 250, 350),
-#'   openness = c(0.5, 0.6, 0.7)
-#' )
-#'
-#' gene_data <- tibble::tibble(
-#'   id = c("gene1", "gene2", "gene3"),
-#'   symbol = c("G1", "G2", "G3"),
-#'   biotype = c("protein_coding", "protein_coding", "protein_coding"),
-#'   chr = c("1", "1", "X"),
-#'   start = c(50, 150, 250),
-#'   end = c(200, 300, 400),
-#'   strand = c("+", "-", "+"),
-#'   tss = c(75, 175, 275)
-#' )
-#'
-#' distances <- calc_peak2gene_distance(peak_data, gene_data, max_distance = 500e3, ncores = 2, verbose = TRUE)
-calc_peak2gene_distance <- function(peak, meta_gene, max_distance = 500e3, ncores, verbose) {
+calc_peak2gene_distance <- function(peak, ncores, meta_gene = grch38, max_distance = 500e3, verbose = TRUE) {
   # Calculate peak center & name
   peak = peak %>%
     dplyr::mutate(center = (start + end) / 2) %>%
     dplyr::mutate(name = paste0('chr', chr, ':', start, '-', end))
 
-  # Calculate the distance between peaks & nearest gene TSS if < max_distance
+  # Calculate the distance between centers of peaks & nearest gene TSS if < max_distance
   df = NULL
   for (chr in unique(meta_gene$chr)) {
     if (verbose) message(paste0('Working on chr ', chr, '...'))
@@ -66,7 +46,7 @@ calc_peak2gene_distance <- function(peak, meta_gene, max_distance = 500e3, ncore
       }
     }, unique(meta_gene_chr$id), SIMPLIFY = F, mc.cores = ncores))
 
-    df = rbind(df, df_chr)
+    df = rbind(df, dplyr::tibble(chr = chr, df_chr))
   }
 
   return(df)

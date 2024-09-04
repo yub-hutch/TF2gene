@@ -4,18 +4,24 @@
 \alias{calc_peak2gene_distance}
 \title{Calculate Peak to Gene Distance}
 \usage{
-calc_peak2gene_distance(peak, meta_gene, max_distance = 5e+05, ncores, verbose)
+calc_peak2gene_distance(
+  peak,
+  ncores,
+  meta_gene = grch38,
+  max_distance = 5e+05,
+  verbose = TRUE
+)
 }
 \arguments{
-\item{peak}{A tibble containing peak data with columns: 'chr', 'start', 'end', and 'openness'.}
-
-\item{meta_gene}{A tibble containing gene metadata with columns: 'id', 'symbol', 'biotype', 'chr', 'start', 'end', 'strand', 'tss'. For example, grch38.}
-
-\item{max_distance}{A numeric value specifying the maximum distance to consider (default is 500,000).}
+\item{peak}{A tibble containing peak data with columns: 'chr', 'start', and 'end'.}
 
 \item{ncores}{An integer specifying the number of cores to use for parallel processing.}
 
-\item{verbose}{A logical value indicating whether to print progress messages.}
+\item{meta_gene}{A tibble containing gene metadata with columns: 'id', 'symbol', 'biotype', 'chr', 'start', 'end', 'strand', 'tss' (default is grch38).}
+
+\item{max_distance}{A numeric value specifying the maximum distance to consider (default is 500,000).}
+
+\item{verbose}{A logical value indicating whether to print progress messages (default is TRUE).}
 }
 \value{
 A tibble with columns: 'gene', 'peak', and 'distance'.
@@ -23,25 +29,4 @@ A tibble with columns: 'gene', 'peak', and 'distance'.
 \description{
 This function calculates the distance between the center of peaks and the nearest gene transcription start site (TSS)
 if the distance is less than a specified maximum distance.
-}
-\examples{
-peak_data <- tibble::tibble(
-  chr = c("1", "1", "X"),
-  start = c(100, 200, 300),
-  end = c(150, 250, 350),
-  openness = c(0.5, 0.6, 0.7)
-)
-
-gene_data <- tibble::tibble(
-  id = c("gene1", "gene2", "gene3"),
-  symbol = c("G1", "G2", "G3"),
-  biotype = c("protein_coding", "protein_coding", "protein_coding"),
-  chr = c("1", "1", "X"),
-  start = c(50, 150, 250),
-  end = c(200, 300, 400),
-  strand = c("+", "-", "+"),
-  tss = c(75, 175, 275)
-)
-
-distances <- calc_peak2gene_distance(peak_data, gene_data, max_distance = 500e3, ncores = 2, verbose = TRUE)
 }

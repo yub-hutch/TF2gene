@@ -2,4 +2,7 @@
 
 export(calc_peak2gene_distance)
 export(format_consensus_peaks)
+export(get_control_peaks)
+export(summarize_consensus_peaks)
+export(write_peak_to_bed)
 importFrom(magrittr,"%>%")

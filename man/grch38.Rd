@@ -11,6 +11,6 @@ An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) w
 grch38
 }
 \description{
-Genes on chromosome 1-22, X, Y. Extracted from biomaRt on Sep 3, 2024. See data.R for details.
+Genes on chromosome 1-22, X, Y. Extracted from biomaRt on Sep 3, 2024. Documented in data-raw/.
 }
 \keyword{datasets}
