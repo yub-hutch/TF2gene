@@ -15,7 +15,7 @@
 ### Control peaks
 
 - Get coordinaltes of null peaks: `get_control_peaks`
-- Write control peaks to bed file: `write_peak_to_bed`
+- Write control peaks to bed file: `write_control_peak_to_bed`
 
 
 ## Link ATAC-seq peaks to genes
