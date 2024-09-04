@@ -39,4 +39,6 @@ write_peak_to_bed(null_peak, fbed = 'null_peaks.bed')
 
 ```
 meta_null_peak = summarize_consensus_peaks(fasta = 'null_peaks.fa', ncores = 36)
+
+saveRDS(meta_null_peak, file = 'meta_null_peak.rds')
 ```
