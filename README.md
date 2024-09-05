@@ -1,10 +1,10 @@
 
-## Install
+## 1. Install
 
 `devtools::install_github('yub-hutch/TF2gene', auth_token = "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")`
 
 
-## Utilities
+## 2. Utilities
 
 ### ATAC-seq peaks
 
@@ -18,7 +18,7 @@
 - Calculate distance between peaks & genes: `calc_peak2gene_distance`
 
 
-## Build a database of Cluster-Buster score on matched control peaks
+## 3. Build a database of Cluster-Buster score on matched control peaks
 
 ### 1. Generate control peaks
 
@@ -121,3 +121,13 @@ python3 /fh/fast/sun_w/kenny_zhang/create_cisTarget_databases/create_cistarget_m
     -t 36
 ```
 
+## 4. Calculate P-value for Cluster-buster score
+
+To sample matched controls of ATAC-seq consensus peaks, generate weights for control peaks in 3 steps:
+1. fit (distance to nearest TSS, GC content) joint density $D$ of the consensus peaks,
+2. assign weight 0 to control peaks that overlap with consensus peaks,
+3. assign weight as the interpolated $D$ of the other control peaks based on their (distance to nearest TSS, GC content).
+
+Do weighted random sampling using the generated weights.
+
+Come back to compare the $D$ of the consensus peaks and sampled matched controls.
