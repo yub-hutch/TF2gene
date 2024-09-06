@@ -60,38 +60,12 @@ ggplot(meta_null_peak, aes(dist, gc_content)) +
 
 ### 3. Run Cluster-Buster on control peaks
 
-Split into 10 batches.
+Do motif by motif.
 
 ```
-total_sequences=$(grep -c "^>" null_peaks.fa)
-sequences_per_file=$((total_sequences / 10))
-
-awk -v seqs_per_file="$sequences_per_file" -v total_sequences="$total_sequences" '
-BEGIN {
-    file_num = 1;
-    seq_count = 0;
-    out = "null_peaks_batch" file_num ".fa";
-    print "Processing file: " out;
-}
-/^>/ {
-    if (seq_count % seqs_per_file == 0 && seq_count != 0 && file_num < 10) {
-        close(out);
-        file_num++;
-        out = "null_peaks_batch" file_num ".fa";
-        print "Processing file: " out;
-    }
-    seq_count++;
-    if (seq_count % 10000 == 0) {
-            printf "Processed %d of %d sequences (%.2f%%)\n", seq_count, total_sequences, (seq_count / total_sequences) * 100;
-        }
-    }
-{
-    print > out
-}
-END {
-    close(out)
-    print "Completed processing all sequences.";
-}' null_peaks.fa
+while IFS= read -r motif_name; do
+  echo "$motif_name" > "feather/${motif_name}.lst"
+done < /fh/fast/sun_w/kenny_zhang/v10nr_clust_public/motifs.lst
 ```
 
 ```
@@ -99,11 +73,11 @@ END {
 #SBATCH --job-name=CB_on_controls
 #SBATCH --output=CB_on_controls_output_%A_%a.txt
 #SBATCH --error=CB_on_controls_error_%A_%a.txt
-#SBATCH --time=7-00:00:00
+#SBATCH --time=01:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=36
-#SBATCH --mem=128GB
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=10GB
 #SBATCH --array=1-10
 
 ml Cluster-Buster/0.0-GCC-12.2.0
