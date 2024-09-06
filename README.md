@@ -72,7 +72,7 @@ done < /fh/fast/sun_w/kenny_zhang/v10nr_clust_public/motifs.lst
 head -n 2 /fh/fast/sun_w/kenny_zhang/v10nr_clust_public/motifs.lst | while IFS= read -r motif; do
   sbatch --job-name=CB_contol \
          --nodes=1 \
-         --ntasks-per-node=1
+         --ntasks-per-node=1 \
          --cpus-per-task=1 \
          --time=1:00:00 \
          --mem=10G \
