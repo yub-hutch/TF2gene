@@ -31,8 +31,10 @@ null_peak = get_control_peaks(
 )
 
 write_peak_to_bed(null_peak, fbed = 'null_peaks.bed')
+```
 
-# bedtools getfasta -fi /fh/fast/sun_w/kenny_zhang/hg38_ref_genome.fa -bed null_peaks.bed -fo null_peaks.fa
+```
+bedtools getfasta -fi /fh/fast/sun_w/kenny_zhang/hg38_ref_genome.fa -bed null_peaks.bed -fo null_peaks.fa
 ```
 
 5,807,331 control peaks in total.
@@ -41,13 +43,9 @@ write_peak_to_bed(null_peak, fbed = 'null_peaks.bed')
 
 ```
 meta_null_peak = summarize_consensus_peaks(fasta = 'null_peaks.fa', ncores = 36)
-
-saveRDS(meta_null_peak, file = 'meta_null_peak.rds')
 ```
 
 ```
-library(ggpubr)
-
 ggplot(meta_null_peak, aes(dist, gc_content)) +
   geom_hex(bins = 100) +
   labs(x = 'Distance to nearest TSS', y = 'GC content') +
@@ -63,36 +61,30 @@ ggplot(meta_null_peak, aes(dist, gc_content)) +
 Do motif by motif.
 
 ```
-while IFS= read -r motif_name; do
-  echo "$motif_name" > "feather/${motif_name}.lst"
+while IFS= read -r motif; do
+  echo "$motif" > "feather/$motif.lst"
 done < /fh/fast/sun_w/kenny_zhang/v10nr_clust_public/motifs.lst
 ```
 
 ```
 #!/bin/bash
-#SBATCH --job-name=CB_on_controls
-#SBATCH --output=CB_on_controls_output_%A_%a.txt
-#SBATCH --error=CB_on_controls_error_%A_%a.txt
-#SBATCH --time=01:00:00
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=1
-#SBATCH --mem=10GB
-#SBATCH --array=1-10
 
-ml Cluster-Buster/0.0-GCC-12.2.0
-ml SciPy-bundle/2023.02-gfbf-2022b
-ml flatbuffers-python/23.1.4-GCCcore-12.2.0
-
-input="null_peaks_batch${SLURM_ARRAY_TASK_ID}.fa"
-out_prefix="null_peaks_batch${SLURM_ARRAY_TASK_ID}"
-
-python3 /fh/fast/sun_w/kenny_zhang/create_cisTarget_databases/create_cistarget_motif_databases.py \
-    -f $input \
-    -M /fh/fast/sun_w/kenny_zhang/v10nr_clust_public/singletons \
-    -m /fh/fast/sun_w/kenny_zhang/v10nr_clust_public/motifs.lst \
-    -o $out_prefix \
-    -t 36
+head -n 2 /fh/fast/sun_w/kenny_zhang/v10nr_clust_public/motifs.lst | while IFS= read -r motif; do
+  sbatch --job-name=CB_contol \
+         --nodes=1 \
+         --ntasks-per-node=1
+         --cpus-per-task=1 \
+         --time=1:00:00 \
+         --mem=10G \
+         --output=/dev/null \
+         --error=/dev/null \
+         --wrap='python3 /fh/fast/sun_w/kenny_zhang/create_cisTarget_databases/create_cistarget_motif_databases.py \
+                         -f null_peaks.fa \
+                         -M /fh/fast/sun_w/kenny_zhang/v10nr_clust_public/singletons \
+                         -m feather/$motif.lst \
+                         -o feather/$motif
+                         -t 1'
+done
 ```
 
 ## 4. Calculate P-value for Cluster-buster score
