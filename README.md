@@ -30,7 +30,7 @@ null_peak = get_control_peaks(
   radius = 5e+05
 )
 
-write_peak_to_bed(null_peak, fbed = 'null_peaks.bed')
+write_control_peak_to_bed(null_peak, fbed = 'null_peaks.bed')
 ```
 
 ```
