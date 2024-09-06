@@ -82,7 +82,7 @@ head -n 2 /fh/fast/sun_w/kenny_zhang/v10nr_clust_public/motifs.lst | while IFS= 
                          -f null_peaks.fa \
                          -M /fh/fast/sun_w/kenny_zhang/v10nr_clust_public/singletons \
                          -m feather/$motif.lst \
-                         -o feather/$motif
+                         -o feather/$motif \
                          -t 1'
 done
 ```
