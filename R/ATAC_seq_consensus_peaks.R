@@ -49,6 +49,7 @@ format_consensus_peaks <- function(fbed) {
 #'
 summarize_consensus_peaks <- function(fasta, ncores, meta_gene = grch38, verbose = TRUE) {
   # Read in sequences of consensus peaks
+  if (verbose) message('Loading peak sequences ...')
   fa = seqinr::read.fasta(fasta, seqtype = 'DNA', as.string = F, forceDNAtolower = T)
 
   # Get genomic locations of consensus peaks
