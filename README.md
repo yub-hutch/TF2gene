@@ -17,8 +17,23 @@
 
 - Calculate distance between peaks & genes: `calc_peak2gene_distance`
 
+## 3. Motif info
 
-## 3. Build a database of Cluster-Buster score on matched control peaks
+```
+meta_motif = get_cb_motif_info('/fh/fast/sun_w/kenny_zhang/v10nr_clust_public/singletons', ncores = 36)
+```
+
+10,249 motif IDs in total, among which 799 contains multiple motifs. The largest motif cluster contains 80,183 motifs.
+
+When calculating Cluster-Buster score for each motif separately, prioritize motif IDs by cluster size. (create_cistarget_motif_databases.py does this iternally when paralleling for multiple motif IDs.)
+
+```
+sorted_motifs = meta_motif %>% arrange(desc(num_inner_motif)) %>% pull(motif)
+
+write.table(sorted_motifs, file = 'sorted_motifs.lst', row.names = F, col.names = F, quote = F)
+```
+
+## 4. Build a database of Cluster-Buster score on matched control peaks
 
 ### 1. Generate control peaks
 
@@ -58,7 +73,7 @@ ggplot(meta_null_peak, aes(dist, gc_content)) +
 
 ### 3. Run Cluster-Buster on control peaks
 
-Do motif by motif.
+10,249 motifs in total. Do for each motif separately.
 
 ```
 while IFS= read -r motif; do
@@ -69,25 +84,32 @@ done < /fh/fast/sun_w/kenny_zhang/v10nr_clust_public/motifs.lst
 ```
 #!/bin/bash
 
-head -n 2 /fh/fast/sun_w/kenny_zhang/v10nr_clust_public/motifs.lst | while IFS= read -r motif; do
-  sbatch --job-name=CB_contol \
-         --nodes=1 \
-         --ntasks-per-node=1 \
-         --cpus-per-task=1 \
-         --time=1:00:00 \
-         --mem=10G \
-         --output=/dev/null \
-         --error=/dev/null \
-         --wrap='python3 /fh/fast/sun_w/kenny_zhang/create_cisTarget_databases/create_cistarget_motif_databases.py \
-                         -f null_peaks.fa \
-                         -M /fh/fast/sun_w/kenny_zhang/v10nr_clust_public/singletons \
-                         -m feather/$motif.lst \
-                         -o feather/$motif \
-                         -t 1'
-done
+#SBATCH --job-name=CB_control
+#SBATCH --output=feather/slurm-%A_%a.out
+#SBATCH --error=feather/slurm-%A_%a.err
+#SBATCH --time=1-00:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=10GB
+
+ml Cluster-Buster/0.0-GCC-12.2.0
+ml SciPy-bundle/2023.02-gfbf-2022b
+ml flatbuffers-python/23.1.4-GCCcore-12.2.0
+
+motif=$(sed -n "${SLURM_ARRAY_TASK_ID}p" sorted_motifs.lst)
+
+echo ${motif} > feather/"${motif}.lst"
+
+python3 /fh/fast/sun_w/kenny_zhang/create_cisTarget_databases/create_cistarget_motif_databases.py \
+        -f null_peaks.fa \
+        -M /fh/fast/sun_w/kenny_zhang/v10nr_clust_public/singletons \
+        -m feather/${motif}.lst \
+        -o feather/${motif} \
+        -t 1
 ```
 
-## 4. Calculate P-value for Cluster-buster score
+## 5. Calculate P-value for Cluster-buster score
 
 To sample matched controls of ATAC-seq consensus peaks, generate weights for control peaks in 3 steps:
 1. fit (distance to nearest TSS, GC content) joint density $D$ of the consensus peaks,
