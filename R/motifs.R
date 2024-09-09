@@ -17,7 +17,7 @@ get_cb_motif_info <- function(dir_motif, ncores, verbose = TRUE) {
   parfun = if (verbose) pbmcapply::pbmcmapply else parallel::mcmapply
   motif_ids = unlist(strsplit(list.files(dir_motif), '\\.cb'))
   num_inner_motifs = parfun(function(motif_id) {
-    lines = readLines(paste0(motif_id, '.cb'))
+    lines = readLines(file.path(dir_motif, paste0(motif_id, '.cb')))
     sum(grep("^>", lines))
   }, motif_ids, mc.cores = ncores)
   meta = dplyr::tibble(motif = motif_ids, num_inner_motif = num_inner_motifs)
