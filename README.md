@@ -6,16 +6,26 @@
 
 ## 2. Utilities
 
+### TF -> motif
+
+- Preprocessed to `df_tf2motif` & `mat_tf2motif`
+
 ### ATAC-seq peaks
 
-- Summarize peaks in terms of distance to TSS & GC content: `summarize_consensus_peaks`
 - Read bed file of real consensus peaks: `format_consensus_peaks`
-- Get coordinaltes of null peaks: `get_control_peaks`
-- Write control peaks to bed file: `write_control_peak_to_bed`
 
-### Link ATAC-seq peaks to genes
+### peak -> gene
 
 - Calculate distance between peaks & genes: `calc_peak2gene_distance`
+
+### motif -> peak
+
+- Get coordinaltes of null peaks: `get_control_peaks`
+- Write control peaks to bed file: `write_control_peak_to_bed`
+- Summarize peaks in terms of distance to TSS & GC content: `summarize_consensus_peaks`
+- Sample matched control peaks based on metadata: `sample_matched_control_peaks`
+
+
 
 ## 3. Motif info
 
