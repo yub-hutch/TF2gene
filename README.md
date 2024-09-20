@@ -109,6 +109,14 @@ python3 /fh/fast/sun_w/kenny_zhang/create_cisTarget_databases/create_cistarget_m
         -t 1
 ```
 
+`create_cistarget_motif_databases.py` creates 3 files for each motif:
+
+- motifs_vs_regions.scores.feather (file size ~30M)
+- regions_vs_motifs.scores.feather (~ 1G), which is simply the transpose of motifs_vs_regions.scores.feather,
+- regions_vs_motifs.rankings.feather (~ 1G), which is the ranking of regions for each motif.
+
+Therefore, keeping only motifs_vs_regions.scores.feather is enough. May supresss writing regions_vs_motifs.scores.feather & regions_vs_motifs.rankings.feather to speed up (by doing some simple edits to the souce code) if more computation is needed in the future.
+
 ## 5. Calculate P-value for Cluster-buster score
 
 To sample matched controls of ATAC-seq consensus peaks, generate weights for control peaks in 3 steps:
