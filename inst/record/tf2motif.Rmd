@@ -1,7 +1,5 @@
 ---
 title: "Calculate TF to motif matrix"
-author: "Bo Yu"
-date: "2024-08-23"
 output: 
   html_document:
     toc: true

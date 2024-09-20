@@ -4,7 +4,13 @@
 \alias{sample_matched_control_peaks}
 \title{Sample Matched Control Peaks}
 \usage{
-sample_matched_control_peaks(meta_peak, meta_control_peak, n_control, seed)
+sample_matched_control_peaks(
+  meta_peak,
+  meta_control_peak,
+  n_control,
+  ncores,
+  seed
+)
 }
 \arguments{
 \item{meta_peak}{A tibble containing metadata for consensus peaks. See \code{\link{summarize_consensus_peaks}}.}
@@ -12,6 +18,8 @@ sample_matched_control_peaks(meta_peak, meta_control_peak, n_control, seed)
 \item{meta_control_peak}{A tibble containing metadata for control peaks.}
 
 \item{n_control}{A numeric value specifying the number of control peaks to sample.}
+
+\item{ncores}{An integer specifying the number of cores to use for parallel processing.}
 
 \item{seed}{A numeric value specifying the seed for random sampling.}
 }
