@@ -1,0 +1,139 @@
+---
+title: "Calculate TF to motif matrix"
+author: "Bo Yu"
+date: "2024-08-23"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = '/fh/scratch/delete90/sun_w/yub/grn/rpe1')
+
+library(data.table)
+library(dplyr)
+library(ggpubr)
+```
+
+## Load data
+
+```{r}
+tf2motif = fread('/fh/fast/sun_w/kenny_zhang/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl') %>%
+  rename(motif_id = '#motif_id')
+
+dim(tf2motif)
+
+head(tf2motif)
+```
+
+## EDA
+
+```{r}
+# Number of TFs
+length(unique(tf2motif$gene_name))
+
+# Number of motifs
+length(unique(tf2motif$motif_id))
+```
+
+```{r}
+# Annotation types
+types = c('gene is directly annotated', 
+          'motif similar to', 
+          'gene is orthologous to', 
+          'motif is annotated for orthologous gene',
+          'gene is annotated for similar motif')
+
+num_types = sapply(types, function(type) sum(startsWith(tf2motif$description, type)))
+
+sum(num_types) == nrow(tf2motif)
+
+sort(num_types, decreasing = T)
+
+tf2motif$type = sapply(tf2motif$description, function(description) {
+  which_type = which(sapply(types, function(type) startsWith(description, type)))
+  types[which_type]
+})
+```
+
+```{r, fig.width=9, fig.height=9}
+# TF degree distribution
+tf_degree = tf2motif %>%
+  group_by(type, gene_name) %>%
+  summarise(degree = n(), .groups = 'drop')
+
+ggplot(tf_degree, aes(degree)) +
+  geom_histogram(bins = 100) +
+  facet_wrap(~type, nrow = 2, ncol = 3, scales = 'free_x') +
+  labs(x = 'TF degree') +
+  theme_pubr()
+
+# Motif degree
+motif_degree = tf2motif %>%
+  group_by(type, motif_id) %>%
+  summarise(degree = n(), .groups = 'drop')
+
+ggplot(motif_degree, aes(degree)) +
+  geom_histogram(bins = 100) +
+  facet_wrap(~type, nrow = 2, ncol = 3, scales = 'free_x') +
+  labs(x = 'Motif degree') +
+  theme_pubr()
+```
+
+## Calculate TF2motif matrix
+
+```{r}
+tfs = sort(unique(tf2motif$gene_name))
+motifs = sort(unique(tf2motif$motif_id))
+
+# With direct annotation
+df_direct = tf2motif %>% 
+  filter(type == 'gene is directly annotated') %>%
+  select(gene_name, motif_id) %>%
+  unique()
+
+mat_direct = Matrix::sparseMatrix(
+  i = match(df_direct$gene_name, tfs),
+  j = match(df_direct$motif_id, motifs),
+  dims = c(length(tfs), length(motifs)),
+  dimnames = list(tfs, motifs)
+)
+
+# With orthology
+df_orth = tf2motif %>% 
+  filter(type %in% c('gene is orthologous to', 'motif is annotated for orthologous gene')) %>%
+  select(gene_name, motif_id) %>%
+  unique()
+
+mat_orth = Matrix::sparseMatrix(
+  i = match(df_orth$gene_name, tfs),
+  j = match(df_orth$motif_id, motifs),
+  dims = c(length(tfs), length(motifs)),
+  dimnames = list(tfs, motifs)
+)
+
+
+# With any annotation
+df_all = tf2motif %>% 
+  select(gene_name, motif_id) %>%
+  unique()
+
+mat_simi = Matrix::sparseMatrix(
+  i = match(df_all$gene_name, tfs),
+  j = match(df_all$motif_id, motifs),
+  dims = c(length(tfs), length(motifs)),
+  dimnames = list(tfs, motifs)
+)
+
+# Combine
+mat = pmax(3 * mat_direct, 2 * mat_orth, mat_simi)
+```
+
+## Save
+
+```{r}
+saveRDS(tf2motif, file = 'annotation/output/df_tf2motif.rds')
+saveRDS(mat, file = 'annotation/output/mat_tf2motif.rds')
+```

@@ -66,3 +66,63 @@ write_control_peak_to_bed <- function(peak, fbed) {
   peak$openness = '.'
   write.table(peak, file = fbed, row.names = F, col.names = F, quote = F, sep = '\t')
 }
+
+
+#' Sample Matched Control Peaks
+#'
+#' This function samples control peaks that match the distribution of consensus peaks based on distance to nearest TSS and GC content.
+#'
+#' @param meta_peak A tibble containing metadata for consensus peaks. See \code{\link{summarize_consensus_peaks}}.
+#' @param meta_control_peak A tibble containing metadata for control peaks.
+#' @param n_control A numeric value specifying the number of control peaks to sample.
+#' @param seed A numeric value specifying the seed for random sampling.
+#'
+#' @return A tibble of subset of meta_control_peak containing the sampled control peaks.
+#' @export
+sample_matched_control_peaks <- function(meta_peak, meta_control_peak, n_control, seed) {
+  message(paste0(nrow(meta_peak), ' consensus peaks detected.'))
+  message(paste0(nrow(meta_control_peak), ' controls peaks detected.'))
+
+  # Exclude control peaks that overlap with consensus peaks
+  ir_meta_peak = IRanges::IRanges(
+    start = meta_peak$start,
+    end = meta_peak$end
+  )
+  ir_meta_control_peak = IRanges::IRanges(
+    start = meta_control_peak$start,
+    end = meta_control_peak$end
+  )
+  overlaps = IRanges::findOverlaps(ir_meta_control_peak, ir_meta_peak)
+  meta_control_peak = meta_control_peak[-S4Vectors::queryHits(overlaps), ]
+  message(paste0(nrow(meta_control_peak), ' controls peaks remaining after excluding overlaps with consensus peaks.'))
+
+  # Exclude consensus peaks with features falling outside those ranges of consensus peaks
+  meta_control_peak = meta_control_peak %>%
+    dplyr::filter(dist >= min(meta_peak$dist),
+                  dist <= max(meta_peak$dist),
+                  gc_content >= min(meta_peak$gc_content),
+                  gc_content <= max(meta_peak$gc_content))
+  message(paste0(nrow(meta_control_peak), ' controls peaks remaining after excluding out-of-range ones.'))
+
+  # Fit density
+  message('Fitting density for consensus peaks ...')
+  fitted_density = MASS::kde2d(
+    x = log10(1 + meta_peak$dist),
+    y = meta_peak$gc_content
+  )
+
+  # Interpolation
+  message('Doing interpolation ...')
+  density_estimate = fields::interp.surface(
+    obj = fitted_density,
+    loc = cbind(log10(1 + meta_control_peak$dist), meta_control_peak$gc_content)
+  )
+  density_estimate[is.na(density_estimate)] = 0
+  message(paste0(sum(density_estimate > 0), ' controls peaks with a nonzero weight.'))
+
+  # Sampling
+  messsage('Doing weighted random sampling ...')
+  ipeaks = sample(seq(nrow(meta_control_peak)), size = n_control, prob = density_estimate, replace = F)
+
+  return(meta_control_peak[ipeak, ])
+}
