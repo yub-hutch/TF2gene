@@ -19,8 +19,8 @@ summarize_consensus_peaks(fasta, ncores, meta_gene = grch38, verbose = TRUE)
 A tibble with the following columns:
 \describe{
   \item{chr}{Chromosome identifier.}
-  \item{start}{Start position of the peak.}
-  \item{end}{End position of the peak.}
+  \item{start}{Start position of the peak (0-based, included).}
+  \item{end}{End position of the peak (0-based, excluded).}
   \item{name}{Name of the peak.}
   \item{center}{Center position of the peak.}
   \item{dist}{Distance from the center of the peak to the nearest gene TSS.}

@@ -19,7 +19,8 @@ format_consensus_peaks <- function(fbed) {
 
   peak = peak %>%
     dplyr::filter(chr %in% paste0('chr', c(as.character(1:22), 'X', 'Y'))) %>%
-    dplyr::mutate(chr = sapply(strsplit(chr, 'chr'), tail, n = 1))
+    dplyr::mutate(chr = sapply(strsplit(chr, 'chr'), tail, n = 1),
+                  name = paste0('chr', chr, ':', start, '-', end))
 
   return(peak)
 }
@@ -101,7 +102,7 @@ plot_meta_peak <- function(meta_peak, log_dist = TRUE) {
   p = ggplot2::ggplot(meta_peak, ggplot2::aes(dist, gc_content)) +
     ggplot2::geom_hex(bins = 100) +
     ggplot2::labs(x = 'Distance to nearest TSS', y = 'GC content') +
-    ggpubr::stat_cor(method = 'spearman', label.x.npc = 'center') +
+    ggpubr::stat_cor(method = 'spearman', label.x.npc = 'right') +
     ggplot2::guides(fill = 'none') +
     ggpubr::theme_pubr()
   if (log_dist) p = p + ggplot2::scale_x_log10()

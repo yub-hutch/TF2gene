@@ -13,8 +13,8 @@ format_consensus_peaks(fbed)
 A tibble with four columns:
 \describe{
   \item{chr}{Chromosome identifier.}
-  \item{start}{Start position of the peak.}
-  \item{end}{End position of the peak.}
+  \item{start}{Start position of the peak (0-based, included).}
+  \item{end}{End position of the peak (0-based, excluded).}
   \item{openness}{Openness score of the peak.}
 }
 }
