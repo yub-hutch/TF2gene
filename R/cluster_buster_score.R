@@ -52,5 +52,5 @@ select_motifs <- function(cbscore, control_peaks, dir_null_cbscore, ncores) {
     pv = wilcox.test(score, matched_null_score, alternative = 'greater')$p.value
 
     dplyr::tibble(motif = motif, logfc = logfc, pv = pv)
-  }, names(rep1_cbscore_list), rep1_cbscore_list, SIMPLIFY = F, mc.cores = ncores))
+  }, names(cbscore_list), cbscore_list, SIMPLIFY = F, mc.cores = ncores))
 }
