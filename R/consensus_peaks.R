@@ -92,20 +92,21 @@ summarize_consensus_peaks <- function(fasta, ncores, meta_gene = grch38, verbose
 #' This function creates a hexbin plot of the distance to the nearest transcription start site (TSS) versus the GC content of the peak sequences.
 #'
 #' @param meta_peak A tibble containing metadata of peaks, including distance to the nearest TSS and GC content. See \code{\link{summarize_consensus_peaks}}.
-#' @param log_dist A logical value indicating whether to log-transform the distance to the nearest TSS (default is TRUE).
+#' @param facet_by A character string specifying the column to facet by (default is NULL).
 #' @param add_cor A logical value indicating whether to add correlation test results to the plot (default is TRUE).
 #'
 #' @return A ggplot object representing the hexbin plot.
 #' @export
 #'
-plot_meta_peak <- function(meta_peak, log_dist = TRUE, add_cor = TRUE) {
-  if (log_dist) meta_peak$dist = meta_peak$dist + 1
+plot_meta_peak <- function(meta_peak, facet_by = NULL, add_cor = TRUE) {
+  meta_peak$dist = meta_peak$dist + 1
   p = ggplot2::ggplot(meta_peak, ggplot2::aes(dist, gc_content)) +
     ggplot2::geom_hex(bins = 100) +
+    ggplot2::scale_x_log10() +
     ggplot2::labs(x = 'Distance to nearest TSS', y = 'GC content') +
     ggplot2::guides(fill = 'none') +
     ggpubr::theme_pubr()
-  if (log_dist) p = p + ggplot2::scale_x_log10()
+  if (!is.null(facet_by)) p = p + ggplot2::facet_wrap(~ get(facet_by), nrow = 1)
   if (add_cor) p = p + ggpubr::stat_cor(method = 'spearman', label.x.npc = 'center')
   return(p)
 }

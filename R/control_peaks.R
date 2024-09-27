@@ -74,13 +74,14 @@ write_control_peak_to_bed <- function(peak, fbed) {
 #'
 #' @param meta_peak A tibble containing metadata for consensus peaks. See \code{\link{summarize_consensus_peaks}}.
 #' @param meta_control_peak A tibble containing metadata for control peaks.
+#' @param nbins Number of bins in each dimension. May be a scalar or a 2 element vector.
 #' @param n_control A numeric value specifying the number of control peaks to sample.
 #' @param ncores An integer specifying the number of cores to use for parallel processing.
 #' @param seed A numeric value specifying the seed for random sampling.
 #'
 #' @return A tibble of subset of meta_control_peak containing the sampled control peaks.
 #' @export
-sample_matched_control_peaks <- function(meta_peak, meta_control_peak, n_control, ncores, seed) {
+sample_matched_control_peaks <- function(meta_peak, meta_control_peak, nbins, n_control, ncores, seed) {
   set.seed(seed)
 
   message(paste0(nrow(meta_peak), ' consensus peaks detected.'))
@@ -113,15 +114,24 @@ sample_matched_control_peaks <- function(meta_peak, meta_control_peak, n_control
 
   # Fit density
   message('Fitting density for consensus peaks ...')
-  fitted_density = MASS::kde2d(
+  fit = gplots::hist2d(
     x = log10(1 + meta_peak$dist),
-    y = meta_peak$gc_content
+    y = meta_peak$gc_content,
+    nbins = nbins,
+    show = TRUE,
+    main = 'Fitted density for consensus peaks'
   )
 
-  # Interpolation
-  message('Doing interpolation ...')
+  #  Do interpolation
+  message('Interpolating for control peaks ...')
+
+  x_breaks = fit$x.breaks
+  y_breaks = fit$y.breaks
+  x_centers = (x_breaks[-1] + x_breaks[-length(x_breaks)]) / 2
+  y_centers = (y_breaks[-1] + y_breaks[-length(y_breaks)]) / 2
+
   density_estimate = fields::interp.surface(
-    obj = fitted_density,
+    obj = list(x = x_centers, y = y_centers, z = fit$counts),
     loc = cbind(log10(1 + meta_control_peak$dist), meta_control_peak$gc_content)
   )
   density_estimate[is.na(density_estimate)] = 0

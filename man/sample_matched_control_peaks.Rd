@@ -7,6 +7,7 @@
 sample_matched_control_peaks(
   meta_peak,
   meta_control_peak,
+  nbins,
   n_control,
   ncores,
   seed
@@ -16,6 +17,8 @@ sample_matched_control_peaks(
 \item{meta_peak}{A tibble containing metadata for consensus peaks. See \code{\link{summarize_consensus_peaks}}.}
 
 \item{meta_control_peak}{A tibble containing metadata for control peaks.}
+
+\item{nbins}{Number of bins in each dimension. May be a scalar or a 2 element vector.}
 
 \item{n_control}{A numeric value specifying the number of control peaks to sample.}
 

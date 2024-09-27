@@ -4,12 +4,12 @@
 \alias{plot_meta_peak}
 \title{Plot Metadata of Peaks}
 \usage{
-plot_meta_peak(meta_peak, log_dist = TRUE, add_cor = TRUE)
+plot_meta_peak(meta_peak, facet_by = NULL, add_cor = TRUE)
 }
 \arguments{
 \item{meta_peak}{A tibble containing metadata of peaks, including distance to the nearest TSS and GC content. See \code{\link{summarize_consensus_peaks}}.}
 
-\item{log_dist}{A logical value indicating whether to log-transform the distance to the nearest TSS (default is TRUE).}
+\item{facet_by}{A character string specifying the column to facet by (default is NULL).}
 
 \item{add_cor}{A logical value indicating whether to add correlation test results to the plot (default is TRUE).}
 }
