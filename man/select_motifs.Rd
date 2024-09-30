@@ -4,7 +4,7 @@
 \alias{select_motifs}
 \title{Select Motifs Based on Cluster-Buster Scores}
 \usage{
-select_motifs(cbscore, control_peaks, dir_null_cbscore, ncores)
+select_motifs(cbscore, control_peaks, dir_null_cbscore, ncores, dir_out)
 }
 \arguments{
 \item{cbscore}{A matrix of cluster-buster scores.}
@@ -14,6 +14,8 @@ select_motifs(cbscore, control_peaks, dir_null_cbscore, ncores)
 \item{dir_null_cbscore}{A character string representing the directory containing the null cluster-buster scores.}
 
 \item{ncores}{An integer specifying the number of cores to use for parallel processing.}
+
+\item{dir_out}{A character string representing the directory to save the results.}
 }
 \value{
 A tibble with motifs, log fold changes, and p-values.
