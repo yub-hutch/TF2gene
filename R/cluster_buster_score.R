@@ -41,7 +41,7 @@ load_cbscore <- function(feather) {
 #' @param dir_out A character string representing the directory to save the results.
 #' @return A tibble with motifs, log fold changes, and p-values.
 #' @export
-select_motifs <- function(cbscore, control_peaks, dir_null_cbscore, ncores, dir_out) {
+select_motifs_with_cbscore <- function(cbscore, control_peaks, dir_null_cbscore, ncores, dir_out) {
   cbscore_list = sapply(rownames(cbscore), simplify = F, function(motif) cbscore[motif, ])
   do.call(rbind, pbmcapply::pbmcmapply(function(motif, score) {
     # Set matched null cluster-buster score
