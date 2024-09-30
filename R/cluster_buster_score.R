@@ -42,6 +42,8 @@ load_cbscore <- function(feather) {
 #' @return A vector of unfinished motifs.
 #' @export
 select_motifs_with_cbscore <- function(cbscore, control_peaks, dir_null_cbscore, ncores, dir_out) {
+  if (!dir.exists(dir_out)) dir.create(dir_out)
+
   # Run
   cbscore_list = sapply(rownames(cbscore), simplify = F, function(motif) cbscore[motif, ])
   junk = pbmcapply::pbmcmapply(function(motif, score) {
