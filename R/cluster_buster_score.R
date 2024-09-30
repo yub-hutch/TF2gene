@@ -39,11 +39,12 @@ load_cbscore <- function(feather) {
 #' @param dir_null_cbscore A character string representing the directory containing the null cluster-buster scores.
 #' @param ncores An integer specifying the number of cores to use for parallel processing.
 #' @param dir_out A character string representing the directory to save the results.
-#' @return A tibble with motifs, log fold changes, and p-values.
+#' @return A vector of unfinished motifs.
 #' @export
 select_motifs_with_cbscore <- function(cbscore, control_peaks, dir_null_cbscore, ncores, dir_out) {
+  # Run
   cbscore_list = sapply(rownames(cbscore), simplify = F, function(motif) cbscore[motif, ])
-  do.call(rbind, pbmcapply::pbmcmapply(function(motif, score) {
+  junk = pbmcapply::pbmcmapply(function(motif, score) {
     # Set matched null cluster-buster score
     all_null_score = load_null_cbscore(motif, dir_null_cbscore)
     matched_null_score = all_null_score[control_peaks]
@@ -56,5 +57,11 @@ select_motifs_with_cbscore <- function(cbscore, control_peaks, dir_null_cbscore,
 
     # Save
     saveRDS(res, file = file.path(dir_out, paste0(motif, '.rds')))
-  }, names(cbscore_list), cbscore_list, SIMPLIFY = F, mc.cores = ncores))
+
+    return(NULL)
+  }, names(cbscore_list), cbscore_list, SIMPLIFY = F, mc.cores = ncores)
+
+  # Check
+  finished_motifs = sapply(strsplit(list.files(dir_out), '.rds'), head, n = 1)
+  setdiff(names(cbscore_list), finished_motifs)
 }
