@@ -24,7 +24,7 @@ select_motifs_with_cbscore(
 \item{dir_out}{A character string representing the directory to save the results.}
 }
 \value{
-A vector of unfinished motifs.
+This function is called by its side effect.
 }
 \description{
 This function selects motifs based on their cluster-buster scores and control peaks.

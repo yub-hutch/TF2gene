@@ -39,7 +39,7 @@ load_cbscore <- function(feather) {
 #' @param dir_null_cbscore A character string representing the directory containing the null cluster-buster scores.
 #' @param ncores An integer specifying the number of cores to use for parallel processing.
 #' @param dir_out A character string representing the directory to save the results.
-#' @return A vector of unfinished motifs.
+#' @return This function is called by its side effect.
 #' @export
 select_motifs_with_cbscore <- function(cbscore, control_peaks, dir_null_cbscore, ncores, dir_out) {
   if (!dir.exists(dir_out)) dir.create(dir_out)
@@ -60,11 +60,17 @@ select_motifs_with_cbscore <- function(cbscore, control_peaks, dir_null_cbscore,
         all_null_score = load_null_cbscore(motif, dir_null_cbscore)
         matched_null_score = all_null_score[control_peaks]
 
-        # Fold change & P-value
+        # Fold change, P-value, & AUC
         logfc = log(mean(score) / mean(matched_null_score))
         pv = wilcox.test(score, matched_null_score, alternative = 'greater')$p.value
+        auc = as.numeric(pROC::auc(
+          response = c(rep(1, length(score)), rep(0, length(matched_null_score))),
+          predictor = c(score, matched_null_score),
+          levels = c(0, 1),
+          direction = '<'
+        ))
 
-        res = dplyr::tibble(motif = motif, logfc = logfc, pv = pv)
+        res = dplyr::tibble(motif = motif, logfc = logfc, pv = pv, auc = auc)
 
         # Save
         saveRDS(res, file = file.path(dir_out, paste0(motif, '.rds')))
