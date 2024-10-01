@@ -45,25 +45,59 @@ select_motifs_with_cbscore <- function(cbscore, control_peaks, dir_null_cbscore,
   if (!dir.exists(dir_out)) dir.create(dir_out)
 
   # Run
+  message('Preparing to run ...')
   cbscore_list = sapply(rownames(cbscore), simplify = F, function(motif) cbscore[motif, ])
-  junk = pbmcapply::pbmcmapply(function(motif, score) {
-    # Set matched null cluster-buster score
-    all_null_score = load_null_cbscore(motif, dir_null_cbscore)
-    matched_null_score = all_null_score[control_peaks]
+  rm(cbscore)
+  gc()
 
-    # Fold change & P-value
-    logfc = log(mean(score) / mean(matched_null_score))
-    pv = wilcox.test(score, matched_null_score, alternative = 'greater')$p.value
+  unfinished_motifs = names(cbscore_list)
+  message(paste0(length(unfinished_motifs), ' motifs detected'))
 
-    res = dplyr::tibble(motif = motif, logfc = logfc, pv = pv)
+  while (length(unfinished_motifs) > 0) {
+    junk = tryCatch({
+      pbmcapply::pbmcmapply(function(motif, score) {
+        # Set matched null cluster-buster score
+        all_null_score = load_null_cbscore(motif, dir_null_cbscore)
+        matched_null_score = all_null_score[control_peaks]
 
-    # Save
-    saveRDS(res, file = file.path(dir_out, paste0(motif, '.rds')))
+        # Fold change & P-value
+        logfc = log(mean(score) / mean(matched_null_score))
+        pv = wilcox.test(score, matched_null_score, alternative = 'greater')$p.value
 
-    return(NULL)
-  }, names(cbscore_list), cbscore_list, SIMPLIFY = F, mc.cores = ncores)
+        res = dplyr::tibble(motif = motif, logfc = logfc, pv = pv)
 
-  # Check
-  finished_motifs = sapply(strsplit(list.files(dir_out), '.rds'), head, n = 1)
-  setdiff(names(cbscore_list), finished_motifs)
+        # Save
+        saveRDS(res, file = file.path(dir_out, paste0(motif, '.rds')))
+
+        return(NULL)
+      }, names(cbscore_list), cbscore_list, SIMPLIFY = F, mc.cores = ncores)
+    }, error = function(e) 'unfinished')
+
+    finished_motifs = sapply(strsplit(list.files(dir_out), '.rds'), head, n = 1)
+    unfinished_motifs = setdiff(names(cbscore_list), finished_motifs)
+
+    if (length(unfinished_motifs) > 0) {
+      message(paste0(length(unfinished_motifs), ' motifs unfinished. Retry ...'))
+      cbscore_list = cbscore_list[unfinished_motifs]
+    } else {
+      message('done.')
+    }
+  }
+  return(NULL)
+}
+
+
+#' Collect Motif Selection Results
+#'
+#' This function collects outputs of \link{\code{select_motifs_with_cbscore}} from a specified directory.
+#'
+#' @param dir_out A character string specifying the directory containing the RDS files.
+#' @param ncores An integer specifying the number of cores to use for parallel processing.
+#'
+#' @return A tibble with columns motif, logfc, and pv.
+#' @export
+collect_motif_selection <- function(dir_out, ncores) {
+  do.call(rbind, parallel::mcmapply(function(file) {
+    readRDS(file.path(dir_out, file))
+  }, list.files(dir_out), SIMPLIFY = F, mc.cores = ncores))
 }
