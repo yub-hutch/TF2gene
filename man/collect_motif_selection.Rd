@@ -12,7 +12,7 @@ collect_motif_selection(dir_out, ncores)
 \item{ncores}{An integer specifying the number of cores to use for parallel processing.}
 }
 \value{
-A tibble with columns motif, logfc, and pv.
+A tibble with columns motif, logfc, pv, and auc.
 }
 \description{
 This function collects outputs of \link{\code{select_motifs_with_cbscore}} from a specified directory.

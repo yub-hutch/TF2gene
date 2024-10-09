@@ -5,7 +5,7 @@
 \alias{mat_tf2motif}
 \title{Processed TF-motif annotations}
 \format{
-An object of class \code{dgCMatrix} with 1605 rows and 27072 columns.
+An object of class \code{dgCMatrix} with 1426 rows and 4355 columns.
 }
 \usage{
 mat_tf2motif

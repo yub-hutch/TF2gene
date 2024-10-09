@@ -5,7 +5,7 @@
 \alias{df_tf2motif}
 \title{TF-motif annotations from cisTarget}
 \format{
-An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 253096 rows and 14 columns.
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 127969 rows and 14 columns.
 }
 \usage{
 df_tf2motif
