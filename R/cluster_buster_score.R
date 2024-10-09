@@ -62,7 +62,7 @@ select_motifs_with_cbscore <- function(cbscore, control_peaks, dir_null_cbscore,
 
         # Fold change, P-value, & AUC
         logfc = log(mean(score) / mean(matched_null_score))
-        pv = wilcox.test(score, matched_null_score, alternative = 'greater')$p.value
+        pv = wilcox.test(score, matched_null_score)$p.value
         auc = as.numeric(pROC::auc(
           response = c(rep(1, length(score)), rep(0, length(matched_null_score))),
           predictor = c(score, matched_null_score),
@@ -100,7 +100,7 @@ select_motifs_with_cbscore <- function(cbscore, control_peaks, dir_null_cbscore,
 #' @param dir_out A character string specifying the directory containing the RDS files.
 #' @param ncores An integer specifying the number of cores to use for parallel processing.
 #'
-#' @return A tibble with columns motif, logfc, and pv.
+#' @return A tibble with columns motif, logfc, pv, and auc.
 #' @export
 collect_motif_selection <- function(dir_out, ncores) {
   do.call(rbind, parallel::mcmapply(function(file) {
