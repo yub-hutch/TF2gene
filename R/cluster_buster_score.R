@@ -14,14 +14,14 @@ load_null_cbscore <- function(motif, dir_null_cbscore) {
 }
 
 
-#' Load Cluster-Buster Scores
+#' Read Cluster-Buster Scores
 #'
-#' This function loads the cluster-buster scores from a feather file.
+#' This function reads the cluster-buster scores from a feather file.
 #'
 #' @param feather A character string representing the path to the feather file.
 #' @return A matrix of scores with motifs as rows and regions as columns.
 #' @export
-load_cbscore <- function(feather) {
+read_cbscore <- function(feather) {
   raw = arrow::read_feather(feather)
   mat = t(as.matrix(raw[, setdiff(names(raw), 'regions')]))
   colnames(mat) = raw$regions
