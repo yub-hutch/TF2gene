@@ -59,7 +59,7 @@ summarize_features_of_regions <- function(fasta, ncores, meta_gene = grch38) {
     sapply(c('a', 'c', 'g', 't'), function(letter) mean(seq == letter))
   }, fa[dist_regions], SIMPLIFY = F, mc.cores = ncores))
   colnames(freq) = paste0('freq_', c('A', 'C', 'G', 'T'))
-  dist = cbind(dist, dplyr::as_tibble(freq))
+  dist = dplyr::bind_cols(dist, dplyr::as_tibble(freq))
 
   return(dist)
 }
