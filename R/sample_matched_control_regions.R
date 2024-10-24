@@ -1,6 +1,6 @@
 #' Sample Matched control regions
 #'
-#' This function samples control regions that match the distribution of consensus peaks based on distance to nearest TSS and GC content.
+#' This function samples control regions that match the A/C/G/T frequencies of consensus peaks.
 #'
 #' @param meta_peak A tibble containing metadata for consensus peaks. See \code{\link{summarize_consensus_peaks}}.
 #' @param meta_control_region A tibble containing metadata for control regions.

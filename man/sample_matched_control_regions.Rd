@@ -30,5 +30,5 @@ sample_matched_control_regions(
 A tibble of subset of meta_control_region containing the sampled control regions.
 }
 \description{
-This function samples control regions that match the distribution of consensus peaks based on distance to nearest TSS and GC content.
+This function samples control regions that match the A/C/G/T frequencies of consensus peaks.
 }
