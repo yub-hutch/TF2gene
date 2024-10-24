@@ -4,10 +4,10 @@
 "grch38"
 
 
-#' Chromosome length of hg38 build
+#' Chromosome length of GRCh38 build
 #'
 #' Only retain chromosome 1-22, X, Y. Documented in data-raw/.
-"hg38_chr_lens"
+"grch38_chr_lens"
 
 
 #' Metadata of motifs

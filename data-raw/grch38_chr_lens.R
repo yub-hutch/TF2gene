@@ -2,4 +2,4 @@
 #
 # Only retain chromosome 1-22, X, Y
 #
-# usethis::use_data(hg38_chr_lens)
+# usethis::use_data(grch38_chr_lens)
