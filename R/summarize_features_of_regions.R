@@ -21,8 +21,8 @@
 #' @export
 #'
 summarize_features_of_regions <- function(fasta, ncores, meta_gene = grch38) {
-  # Read in sequences of consensus peaks
-  message('Loading peak sequences ...')
+  # Read in sequences of regions
+  message('Loading region sequences ...')
   fa = seqinr::read.fasta(fasta, seqtype = 'DNA', as.string = F, forceDNAtolower = T)
 
   # Get genomic locations of consensus peaks
@@ -43,7 +43,7 @@ summarize_features_of_regions <- function(fasta, ncores, meta_gene = grch38) {
   for (chr in unique(meta_gene$chr)) {
     message(paste0('Working on chr ', chr, ' ...'))
     meta_gene_chr = meta_gene[meta_gene$chr == chr, ]
-    meta_chr = meta[meta$chr == chr, ]
+    meta_chr = meta[meta$chr == paste0('chr', chr), ]
 
     meta_chr$dist = parallel::mcmapply(function(center) {
       min(abs(center - meta_gene_chr$tss))
