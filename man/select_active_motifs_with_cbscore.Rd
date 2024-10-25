@@ -16,7 +16,7 @@ select_active_motifs_with_cbscore(
 \item{cbscore}{A matrix of cluster-buster scores of consensus peaks.}
 
 \item{control_regions}{A names vector of best control regions for each consensus peak.
-See \code{\link{extract_best_matched_control_regions}}.}
+See \code{\link{extract_best_matched_control_region}}.}
 
 \item{dir_null_cbscore}{A character string representing the directory containing the cluster-buster scores on control regions.}
 
