@@ -65,3 +65,18 @@ select_active_motifs_with_cbscore <- function(cbscore, control_regions, dir_null
   return(NULL)
 }
 
+
+#' Collect Motif Selection Results
+#'
+#' This function collects outputs of \link{\code{select_active_motifs_with_cbscore}} from a specified directory.
+#'
+#' @param dir_out A character string specifying the directory containing the RDS files.
+#' @param ncores An integer specifying the number of cores to use for parallel processing.
+#'
+#' @return A tibble with columns motif, logfc, pv, and auc.
+#' @export
+collect_motif_selection <- function(dir_out, ncores) {
+  do.call(rbind, parallel::mcmapply(function(file) {
+    readRDS(file.path(dir_out, file))
+  }, list.files(dir_out), SIMPLIFY = F, mc.cores = ncores))
+}
