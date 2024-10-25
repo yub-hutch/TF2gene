@@ -68,3 +68,38 @@ extract_matched_control_regions <- function(meta_consensus_peak, meta_control_re
   )
   return(mat)
 }
+
+
+
+#' Extract Best Matched Control Regions
+#'
+#' This function finds the best-matched control region for each consensus peak.
+#'
+#' @param mapping_mat A sparse matrix where rows represent consensus peaks and columns
+#'   represent control regions. Each entry in the matrix is a value indicating the
+#'   distance between the consensus peak and the control region.
+#'   See \code{\link{extract_matched_control_regions}}.
+#' @param ncores An integer specifying the number of cores to use for parallel processing.
+#'
+#' @return A named vector of the best control region for each consensus peak.
+#'
+#' @export
+extract_best_matched_control_region <- function(mapping_mat, ncores) {
+  control_regions = colnames(mapping_mat)
+  chunk_indices = split(seq(nrow(mapping_mat)), cut(seq(nrow(mapping_mat)), ncores))
+  mat_chunks = lapply(chunk_indices, function(indices) mapping_mat[indices, , drop = FALSE])
+  result = do.call(rbind, pbmcapply::pbmcmapply(function(sub_mat) {
+    curr = NULL
+    for (i in seq(nrow(sub_mat))) {
+      v = sub_mat[i, ]
+      non_zero_indices = which(v != 0)
+      min_nonzero_index = non_zero_indices[which.min(v[non_zero_indices])]
+      best_control_region = data.frame(control_region = control_regions[min_nonzero_index], distance = min(v[non_zero_indices]))
+      curr = rbind(curr, best_control_region)
+    }
+    curr
+  }, mat_chunks, mc.cores = ncores, SIMPLIFY = F))
+  result$consensus_peak = rownames(mapping_mat)
+  result = dplyr::as_tibble(result)[, c('consensus_peak', 'control_region', 'distance')]
+  return(result)
+}

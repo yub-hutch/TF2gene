@@ -1,12 +1,12 @@
-#' Load Null Cluster-Buster Scores
+#' Read Null Cluster-Buster Scores
 #'
-#' This function loads the null cluster-buster scores for a given motif.
+#' This function reads the cluster-buster scores on control regions for a given motif.
 #'
 #' @param motif A character string representing the motif name.
 #' @param dir_null_cbscore A character string representing the directory containing the null cluster-buster scores.
 #' @return A named numeric vector of scores.
 #' @export
-load_null_cbscore <- function(motif, dir_null_cbscore) {
+read_null_cbscore <- function(motif, dir_null_cbscore) {
   fname = file.path(dir_null_cbscore, paste0(motif, '.motifs_vs_regions.scores.feather'))
   raw = arrow::read_feather(fname)
   score = setNames(raw[[1]], raw$regions)
