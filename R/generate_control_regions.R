@@ -45,6 +45,8 @@ generate_control_regions <- function(meta_gene = grch38, chr_lens = grch38_chr_l
     control_region = rbind(control_region, dplyr::tibble(chr = chr, start = region_starts, end = region_ends))
   }
 
+  control_region$start = control_region$start - 1 # Align to bed format
+
   return(control_region)
 }
 
@@ -60,7 +62,6 @@ generate_control_regions <- function(meta_gene = grch38, chr_lens = grch38_chr_l
 #' @export
 #'
 write_control_regions_to_bed <- function(control_region, fbed) {
-  control_region$start = control_region$start - 1 # bed file is 0-based
   control_region$chr = paste0('chr', control_region$chr)
   control_region$name = paste0('control', seq(nrow(control_region)))
   control_region$openness = '.'
