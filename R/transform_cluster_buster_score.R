@@ -1,3 +1,7 @@
+#' @import Matrix
+NULL
+
+
 #' Transform Cluster-Buster Scores
 #'
 #' Transforms Cluster-Buster scores for enriched and depleted motifs.
@@ -29,7 +33,7 @@ transform_cbscore <- function(cbscore, depleted_motifs, enriched_motifs, mapping
     for (consensus_peak in consensus_peaks) {
       mapping = mapping_mat[consensus_peak, ]
       mapping = mapping[mapping > 0]
-      stopifnot(length(mapping) >= n)
+      stopifnot(length(mapping) >= n_control)
       control_regions = names(head(sort(mapping), n_control))
       matched_null_score = all_null_score[control_regions]
       pvs[consensus_peak] = mean(matched_null_score >= v_cbscore[consensus_peak])
