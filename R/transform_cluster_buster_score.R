@@ -1,3 +1,7 @@
+#' @import Matrix
+NULL
+
+
 #' Transform Cluster-Buster Scores
 #'
 #' Transforms Cluster-Buster scores for enriched and depleted motifs.
