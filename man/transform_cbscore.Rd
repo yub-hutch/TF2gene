@@ -2,7 +2,7 @@
 % Please edit documentation in R/transform_cluster_buster_score.R
 \name{transform_cbscore}
 \alias{transform_cbscore}
-\title{Transform Cluster-Buster Scores}
+\title{Transform Cluster-Buster Scores to P-values}
 \usage{
 transform_cbscore(
   cbscore,
