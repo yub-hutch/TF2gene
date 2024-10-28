@@ -15,12 +15,12 @@
 #'
 transform_cbscore <- function(cbscore, depleted_motifs, enriched_motifs, mapping_mat, dir_null_cbscore, n_control, ncores) {
   # Check arguments
-  consensus_peaks = colnames(cbscore)
-  stopifnot(identical(rownames(mapping_mat), consensus_peaks))
+  stopifnot(setequal(rownames(mapping_mat), colnames(cbscore)))
+  consensus_peaks = rownames(mapping_mat)
 
   # Subset motifs
   message('Subsetting motifs ...')
-  cbscore = cbscore[c(depleted_motifs, enriched_motifs), ]
+  cbscore = cbscore[c(depleted_motifs, enriched_motifs), consensus_peaks]
 
   # Set score of depleted motifs to -1
   cbscore[depleted_motifs, ] = -1
