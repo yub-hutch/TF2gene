@@ -1,48 +1,50 @@
 #' Transform Cluster-Buster Scores to P-values
 #'
-#' Transforms Cluster-Buster scores for enriched and depleted motifs.
+#' Transforms Cluster-Buster scores into P-values by comparing to (motif, consensus peak)-specific null scores.
 #'
 #' @param cbscore Matrix of Cluster-Buster scores with motifs as rows and consensus peaks as columns.
-#' @param depleted_motifs Vector of motif names set as depleted, with scores set to zero.
-#' @param enriched_motifs Vector of motif names to be enriched and transformed.
 #' @param mapping_mat Sparse matrix mapping consensus peaks to control regions. See \code{\link{extract_matched_control_regions}}.
 #' @param dir_null_cbscore Directory path with precomputed null distributions for each motif.
-#' @param n_control Number of control regions used in null score calculation.
+#' @param n_control Number of control regions used in null score calculation in alignment with mapping_mat.
 #' @param ncores Number of cores for parallel processing.
 #'
-#' @return Modified `cbscore` matrix with transformed scores.
+#' @return A P-value matrix.
 #' @export
 #'
-transform_cbscore <- function(cbscore, depleted_motifs, enriched_motifs, mapping_mat, dir_null_cbscore, n_control, ncores) {
-  # Check arguments
-  stopifnot(setequal(rownames(mapping_mat), colnames(cbscore)))
+transform_cbscore <- function(cbscore, mapping_mat, dir_null_cbscore, n_control, ncores) {
+  # Check arguments & format inputs
+  message('Formatting inputs ...')
   consensus_peaks = rownames(mapping_mat)
+  control_regions = colnames(mapping_mat)
+  mapping_mat = mapping_mat > 0
 
-  # Subset motifs
-  message('Subsetting motifs ...')
-  cbscore = cbscore[c(depleted_motifs, enriched_motifs), consensus_peaks]
+  stopifnot(setequal(consensus_peaks, colnames(cbscore)))
+  cbscore = cbscore[, consensus_peaks]
+  motifs = rownames(cbscore)
 
-  # Set score of depleted motifs to -1
-  cbscore[depleted_motifs, ] = -1
+  detected_n_controls = Matrix::rowSums(mapping_mat)
+  stopifnot(all(detected_n_controls == n_control))
 
-  # Extract top matched control regions
-  message('Extract top matched control regions ...')
-  control_regions = extract_top_matched_control_regions(mapping_mat, n_control, ncores)
-  stopifnot(identical(names(control_regions), consensus_peaks))
-  rm(mapping_mat, n_control)
-  gc()
+  # Transform Cluster-Buster score
+  message('Splitting cbscore for parallel computation ...')
+  vs_cbscore = lapply(motifs, function(motif) cbscore[motif, ])
 
-  # Transform Cluster-Buster score of enriched motifs
-  message('Transforming Cluster-Buster score of enriched motifs ...')
-  vs_cbscore = lapply(enriched_motifs, function(motif) cbscore[motif, ])
-  cbscore[enriched_motifs, ] = t(pbmcapply::pbmcmapply(function(motif, v_cbscore) {
-    all_null_score = read_null_cbscore(motif, dir_null_cbscore)
-    pvs = mapply(function(regions, score) {
-      matched_null_score = all_null_score[regions]
-      mean(matched_null_score >= score)
-    }, control_regions, v_cbscore)
-    pvs
-  }, enriched_motifs, vs_cbscore, mc.cores = ncores))
+  message('Transforming Cluster-Buster score ...')
+  pv = t(pbmcapply::pbmcmapply(function(motif, v_cbscore) {
+    all_null_score = read_null_cbscore(motif, dir_null_cbscore)[control_regions]
 
-  return(cbscore)
+    # To do efficient sparse matrix operation, otherwise computationally infeasible
+    diag_all_null_score = Matrix::Diagonal(x = all_null_score + 1) # Add 1 to distinguish blank elements and 0 score
+    mapping_mat_with_null_cbscore = mapping_mat %*% diag_all_null_score
+    comparison = Matrix::sparseMatrix(
+      i = mapping_mat_with_null_cbscore@i + 1, # @i is 0-based
+      j = Matrix::summary(mapping_mat_with_null_cbscore)$j, # Matrix::summary()$j is 1-based
+      x = mapping_mat_with_null_cbscore@x >= (v_cbscore[mapping_mat_with_null_cbscore@i + 1] + 1),
+      dims = dim(mapping_mat_with_null_cbscore)
+    )
+    Matrix::rowSums(comparison) / n_control
+  }, motifs, vs_cbscore, mc.cores = ncores))
+  dimnames(pv) = dimnames(cbscore)
+
+  return(pv)
 }
