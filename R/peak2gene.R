@@ -73,6 +73,7 @@ calc_peak2gene_distance <- function(consensus_peak, ncores, meta_gene = grch38, 
 #'
 #' @return A binary sparse matrix of the same dimensions as `peak2gene_distance` with entries of 1 where
 #'         peak-to-gene distances are within `distance_thr` and 0 elsewhere.
+#' @export
 #'
 calc_binary_peak2gene <- function(peak2gene_distance, distance_thr) {
   keep = (peak2gene_distance@x > 0) & (peak2gene_distance@x < distance_thr)
