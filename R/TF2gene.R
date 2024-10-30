@@ -16,10 +16,16 @@ calc_tf2gene_score <- function(tf2peak, peak2gene_distance, distance_thr) {
   tf2peak = tf2peak[, consensus_peaks]
 
   # Subset connections between consensus peak and genes
-  peak2gene = (peak2gene_distance > 0) & (peak2gene_distance < peak2gene_distance_thr)
+  keep = (peak2gene_distance@x > 0) & (peak2gene_distance@x < distance_thr)
+  peak2gene = Matrix::sparseMatrix(
+    i = peak2gene_distance@i[keep] + 1, # @i is 0-based
+    j = Matrix::summary(peak2gene_distance)$j[keep], # summary()$j is 1-based
+    x = 1,
+    dims = dim(peak2gene_distance),
+    dimnames = dimnames(peak2gene_distance)
+  )
 
   # Calculate TF-gene score
-  tf2gene = tf2peak %*% peak2gene
-  if (Matrix::mean(tf2gene == 0) < 0.2) tf2gene = as.matrix(tf2gene)
+  tf2gene = as.matrix(tf2peak %*% peak2gene)
   return(tf2gene)
 }
