@@ -16,6 +16,7 @@ calc_tf2peak_score <- function(trans_cbscore, n_control, mat_tf2motif = mat_tf2m
   # Check arguments
   stopifnot(all(rownames(trans_cbscore) %in% colnames(mat_tf2motif)))
   stopifnot(tf2motif_level <= 3)
+  message(paste0(nrow(mat_tf2motif), ' TFs detected'))
 
   # Subset TF-motif connection
   message('Subsetting TF-motif connection above the specified level ...')
@@ -37,6 +38,6 @@ calc_tf2peak_score <- function(trans_cbscore, n_control, mat_tf2motif = mat_tf2m
   # Calculate TF-peak score
   message('Calculating TF-peak score ...')
   tf2peak = mat_tf2motif %*% motif2peak
-
+  if (Matrix::mean(tf2peak == 0) < 0.1) tf2peak = as.matrix(tf2peak)
   return(tf2peak)
 }
