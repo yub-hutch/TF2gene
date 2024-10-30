@@ -61,3 +61,27 @@ calc_peak2gene_distance <- function(consensus_peak, ncores, meta_gene = grch38, 
 
   return(mat)
 }
+
+
+#' Calculate Binary Peak-to-Gene Matrix
+#'
+#' This function generates a binary sparse matrix indicating peak-to-gene associations
+#' within a specified distance threshold.
+#'
+#' @param peak2gene_distance A sparse matrix where non-zero entries represent distances between peaks and genes.
+#' @param distance_thr Numeric value specifying the maximum distance threshold for peak-to-gene associations.
+#'
+#' @return A binary sparse matrix of the same dimensions as `peak2gene_distance` with entries of 1 where
+#'         peak-to-gene distances are within `distance_thr` and 0 elsewhere.
+#'
+calc_binary_peak2gene <- function(peak2gene_distance, distance_thr) {
+  keep = (peak2gene_distance@x > 0) & (peak2gene_distance@x < distance_thr)
+  peak2gene = Matrix::sparseMatrix(
+    i = peak2gene_distance@i[keep] + 1, # @i is 0-based
+    j = Matrix::summary(peak2gene_distance)$j[keep], # summary()$j is 1-based
+    x = 1,
+    dims = dim(peak2gene_distance),
+    dimnames = dimnames(peak2gene_distance)
+  )
+  return(peak2gene)
+}
