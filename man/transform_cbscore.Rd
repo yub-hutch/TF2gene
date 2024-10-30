@@ -4,34 +4,22 @@
 \alias{transform_cbscore}
 \title{Transform Cluster-Buster Scores to P-values}
 \usage{
-transform_cbscore(
-  cbscore,
-  depleted_motifs,
-  enriched_motifs,
-  mapping_mat,
-  dir_null_cbscore,
-  n_control,
-  ncores
-)
+transform_cbscore(cbscore, mapping_mat, dir_null_cbscore, n_control, ncores)
 }
 \arguments{
 \item{cbscore}{Matrix of Cluster-Buster scores with motifs as rows and consensus peaks as columns.}
-
-\item{depleted_motifs}{Vector of motif names set as depleted, with scores set to zero.}
-
-\item{enriched_motifs}{Vector of motif names to be enriched and transformed.}
 
 \item{mapping_mat}{Sparse matrix mapping consensus peaks to control regions. See \code{\link{extract_matched_control_regions}}.}
 
 \item{dir_null_cbscore}{Directory path with precomputed null distributions for each motif.}
 
-\item{n_control}{Number of control regions used in null score calculation.}
+\item{n_control}{Number of control regions used in null score calculation in alignment with mapping_mat.}
 
 \item{ncores}{Number of cores for parallel processing.}
 }
 \value{
-Modified `cbscore` matrix with transformed scores.
+A P-value matrix.
 }
 \description{
-Transforms Cluster-Buster scores for enriched and depleted motifs.
+Transforms Cluster-Buster scores into P-values by comparing to (motif, consensus peak)-specific null scores.
 }

@@ -2,31 +2,29 @@
 % Please edit documentation in R/peak2gene.R
 \name{calc_peak2gene_distance}
 \alias{calc_peak2gene_distance}
-\title{Calculate Peak to Gene Distance}
+\title{Calculate the distance between consensus peaks to genes}
 \usage{
 calc_peak2gene_distance(
-  peak,
+  consensus_peak,
   ncores,
   meta_gene = grch38,
-  max_distance = 5e+05,
-  verbose = TRUE
+  max_distance = 5e+05
 )
 }
 \arguments{
-\item{peak}{A tibble containing peak data with columns: 'chr', 'start', and 'end'.}
+\item{consensus_peak}{A tibble containing consensus peak data with columns: 'chr', 'start', and 'end'.}
 
-\item{ncores}{An integer specifying the number of cores to use for parallel processing.}
+\item{ncores}{Number of cores to use for parallel processing.}
 
 \item{meta_gene}{A tibble containing gene metadata with columns: 'id', 'symbol', 'biotype', 'chr', 'start', 'end', 'strand', 'tss' (default is grch38).}
 
-\item{max_distance}{A numeric value specifying the maximum distance to consider (default is 500,000).}
-
-\item{verbose}{A logical value indicating whether to print progress messages (default is TRUE).}
+\item{max_distance}{Maximum distance to consider (default is 500,000).}
 }
 \value{
-A tibble with columns: 'gene', 'peak', and 'distance'.
+A sparse matrix representing the distances. To distinguish distance 0 from empty sparse matrix
+elements, distance 0 is set to 0.1.
 }
 \description{
-This function calculates the distance between the center of peaks and the nearest gene transcription start site (TSS)
+This function calculates the distance between the center of peaks and the nearest TSS,
 if the distance is less than a specified maximum distance.
 }
