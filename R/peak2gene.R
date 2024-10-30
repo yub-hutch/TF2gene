@@ -49,8 +49,8 @@ calc_peak2gene_distance <- function(consensus_peak, ncores, meta_gene = grch38, 
 
   # Create sparse matrix
   message('Creating sparse matrix ...')
-  consensus_peaks = unique(df$consensus_peak)
-  genes = unique(df$gene)
+  consensus_peaks = consensus_peak$name
+  genes = sort(unique(meta_gene$id))
   mat = Matrix::sparseMatrix(
     i = match(df$consensus_peak, consensus_peaks),
     j = match(df$gene, genes),

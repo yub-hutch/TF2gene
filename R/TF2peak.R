@@ -22,13 +22,8 @@ calc_tf2peak_score <- function(trans_cbscore, n_control, mat_tf2motif = mat_tf2m
   message('Subsetting TF-motif connection above the specified level ...')
   mat_tf2motif = (mat_tf2motif >= tf2motif_level)
 
-  message('Removing TFs without connection ...')
   motifs = rownames(trans_cbscore)
   mat_tf2motif = mat_tf2motif[, motifs]
-  keep_TF = Matrix::rowSums(mat_tf2motif) > 0
-  stopifnot(sum(keep_TF) > 0)
-  mat_tf2motif = mat_tf2motif[keep_TF, ]
-  message(paste0(nrow(mat_tf2motif), ' TFs left'))
 
   # Transform P-value
   message('Transforming the input P-value matrix ...')
