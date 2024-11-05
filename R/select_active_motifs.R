@@ -1,32 +1,12 @@
-#' Cauchy Combination Test
+#' Select Active Motifs
 #'
-#' This function combines \( p \)-values using the Cauchy Combination Test, which is effective
-#' for handling dependencies among tests.
+#' Calculates enrichment proportions for each motif based on transformed Cluster-Buster scores.
 #'
-#' @param pvals Numeric vector of p-values (each between 1e-16 and 1).
-#' @return Combined p-value from the Cauchy test.
+#' @param trans_cbscore Matrix or data frame of transformed Cluster-Buster scores (See \code{\link{transform_cbscore}}).
+#'
+#' @return Tibble with `motif` and `prop_enrich` columns.
 #' @export
-cauchy_combination_test <- function(pvals) {
-  stopifnot(all(!is.na(pvals)) & all(pvals > 1e-16) & all(pvals < 1))
-  weights = rep(1 / length(pvals), length(pvals))
-  stat = sum(weights * tan((0.5 - pvals) * pi))
-  ifelse(stat > 1e15, 1 / stat / pi, 1 - pcauchy(stat))
-}
-
-
-#' Select Active Motifs Based on Transformed Cluster-Buster Scores
-#'
-#' This function applies the Cauchy Combination Test to transformed Cluster-Buster scores and
-#' returns a tibble of motifs and combined p-values.
-#'
-#' @param trans_cbscore Matrix of transformed Cluster-Buster scores (rows are motifs).
-#' @param n_control Numeric, the number of control regions used.
-#' @return A tibble with motifs and their combined p-values.
-#' @export
-select_active_motifs <- function(trans_cbscore, n_control) {
-  epsilon = 0.1 / n_control
-  trans_cbscore[trans_cbscore == 0] = epsilon
-  trans_cbscore[trans_cbscore == 1] = 1 - epsilon
-  pvals = apply(trans_cbscore, 1, cauchy_combination_test)
-  dplyr::tibble(motif = rownames(trans_cbscore), pv = pvals)
+select_active_motifs <- function(trans_cbscore) {
+  prop_enrich = 1 - 2 * rowMeans(trans_cbscore > 0.5)
+  dplyr::tibble(motif = names(prop_enrich), prop_enrich = prop_enrich)
 }

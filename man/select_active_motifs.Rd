@@ -2,19 +2,16 @@
 % Please edit documentation in R/select_active_motifs.R
 \name{select_active_motifs}
 \alias{select_active_motifs}
-\title{Select Active Motifs Based on Transformed Cluster-Buster Scores}
+\title{Select Active Motifs}
 \usage{
-select_active_motifs(trans_cbscore, n_control)
+select_active_motifs(trans_cbscore)
 }
 \arguments{
-\item{trans_cbscore}{Matrix of transformed Cluster-Buster scores (rows are motifs).}
-
-\item{n_control}{Numeric, the number of control regions used.}
+\item{trans_cbscore}{Matrix or data frame of transformed Cluster-Buster scores (See \code{\link{transform_cbscore}}).}
 }
 \value{
-A tibble with motifs and their combined p-values.
+Tibble with `motif` and `prop_enrich` columns.
 }
 \description{
-This function applies the Cauchy Combination Test to transformed Cluster-Buster scores and
-returns a tibble of motifs and combined p-values.
+Calculates enrichment proportions for each motif based on transformed Cluster-Buster scores.
 }
