@@ -5,6 +5,7 @@
 #'
 #' @param pvals Numeric vector of p-values (each between 1e-16 and 1).
 #' @return Combined p-value from the Cauchy test.
+#' @export
 cauchy_combination_test <- function(pvals) {
   stopifnot(all(!is.na(pvals)) & all(pvals > 1e-16) & all(pvals < 1))
   weights = rep(1 / length(pvals), length(pvals))
@@ -21,6 +22,7 @@ cauchy_combination_test <- function(pvals) {
 #' @param trans_cbscore Matrix of transformed Cluster-Buster scores (rows are motifs).
 #' @param n_control Numeric, the number of control regions used.
 #' @return A tibble with motifs and their combined p-values.
+#' @export
 select_active_motifs <- function(trans_cbscore, n_control) {
   epsilon = 0.1 / n_control
   trans_cbscore[trans_cbscore == 0] = epsilon
