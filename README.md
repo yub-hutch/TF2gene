@@ -27,8 +27,10 @@ where
 - `dir_save` is the directory to save intermediate outputs, which will be loaded when the unfinished task is resumed,
 - `resume` is logical indicating whether to resume the unfinished task,
 - `num_control_per_peak` is the number of matched control regions to use for each consensus peak,
-- `rules` is used for motif selection. (1) Proportion(P-value < 0.05) > 5%, (2) Proportion(P-value < 0.01) > 1%, (3) Minimum Q-value < 0.25. Tune `rules` to get a reseanable number of active motifs.
+- `rules` is used for motif selection. (1) Proportion(P-value < 0.05) > 5%, (2) Proportion(P-value < 0.01) > 1%, (3) Minimum Q-value < 0.25. Tune `rules` to get a reasonable number of active motifs.
 
+
+To get `peak2gene` by distance, use `get_peak2gene`.
 
 
 ## 3. Notes
