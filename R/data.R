@@ -31,4 +31,5 @@
 #' Meta data of genome-wide control regions
 #'
 #' A tibble with columns chr, start, end, dist (distance to nearset TSS), freq_A, freq_C, freq_G, freq_T.
+#' @export
 "meta_control_region"
