@@ -10,12 +10,13 @@
 #' @param rules A vector of rules for selecting motifs. Default is `c(0.05, 0.01, 0.25)`.
 #' @param dir_save Directory to save intermediate outputs, which will be loaded when the task is resumed.
 #' @param resume Logical indicating whether to resume the unfinished task.
+#' @param ncores Number of cores for parallel computation.
 #'
 #' @return A list containing (1) a P-value matrix for all TFs to all genes, where 2 indicates TF has no motifs or gene has no peaks,
 #' (2) a compact P-value matrix removing the TFs and genes with P-values of 2, (3) a compact Q-value matrix where Q-values are calculated for each TF.
 #' @export
 #'
-TF2gene <- function(feather_file, fasta_consenesus_peaks, dir_null_cbscore, peak2gene, dir_save, resume, num_control_per_peak = 1000, rules = c(0.05, 0.01, 0.25)) {
+TF2gene <- function(feather_file, fasta_consenesus_peaks, dir_null_cbscore, peak2gene, dir_save, resume, ncores, num_control_per_peak = 1000, rules = c(0.05, 0.01, 0.25)) {
   # Read (motifs, peaks) Cluster-Buster score matrix
   cbscore = read_cbscore(feather_file)
 

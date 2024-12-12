@@ -11,6 +11,7 @@ TF2gene(
   peak2gene,
   dir_save,
   resume,
+  ncores,
   num_control_per_peak = 1000,
   rules = c(0.05, 0.01, 0.25)
 )
@@ -27,6 +28,8 @@ TF2gene(
 \item{dir_save}{Directory to save intermediate outputs, which will be loaded when the task is resumed.}
 
 \item{resume}{Logical indicating whether to resume the unfinished task.}
+
+\item{ncores}{Number of cores for parallel computation.}
 
 \item{num_control_per_peak}{Number of matched control regions per peak. Default is 1000.}
 
