@@ -7,7 +7,7 @@
 calc_peak2gene_distance(
   consensus_peak,
   ncores,
-  meta_gene = grch38,
+  meta_gene = TF2gene::grch38,
   max_distance = 5e+05
 )
 }
@@ -16,7 +16,7 @@ calc_peak2gene_distance(
 
 \item{ncores}{Number of cores to use for parallel processing.}
 
-\item{meta_gene}{A tibble containing gene metadata with columns: 'id', 'symbol', 'biotype', 'chr', 'start', 'end', 'strand', 'tss' (default is grch38).}
+\item{meta_gene}{A tibble containing gene metadata with columns: 'id', 'symbol', 'biotype', 'chr', 'start', 'end', 'strand', 'tss' (default is TF2gene::grch38).}
 
 \item{max_distance}{Maximum distance to consider (default is 500,000).}
 }

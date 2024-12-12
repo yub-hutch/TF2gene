@@ -2,14 +2,14 @@
 % Please edit documentation in R/peak2gene.R
 \name{calc_binary_peak2gene}
 \alias{calc_binary_peak2gene}
-\title{Calculate Binary Peak-to-Gene Matrix}
+\title{Inner function for calculating Binary Peak-to-Gene Matrix}
 \usage{
-calc_binary_peak2gene(peak2gene_distance, distance_thr)
+calc_binary_peak2gene(peak2gene_distance, distance_thr = 1e+05)
 }
 \arguments{
 \item{peak2gene_distance}{A sparse matrix where non-zero entries represent distances between peaks and genes.}
 
-\item{distance_thr}{Numeric value specifying the maximum distance threshold for peak-to-gene associations.}
+\item{distance_thr}{Numeric value specifying the maximum distance threshold for peak-to-gene associations. Default is 100 kb.}
 }
 \value{
 A binary sparse matrix of the same dimensions as `peak2gene_distance` with entries of 1 where
