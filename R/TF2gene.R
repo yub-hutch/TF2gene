@@ -24,9 +24,9 @@ TF2gene <- function(feather_file, fasta_consenesus_peaks, dir_null_cbscore, peak
   peak2gene = peak2gene[colnames(cbscore), ]
 
   # Exclude dimer and TF-pair motifs
-  dimers = grep('dimer', rownames(pv_cbscore), value = T)
-  tf_pairs = grep('pair', rownames(pv_cbscore), value = T)
-  cbscore = cbscore[setdiff(rownames(pv_cbscore), c(dimers, tf_pairs)), ]
+  dimers = grep('dimer', rownames(cbscore), value = T)
+  tf_pairs = grep('pair', rownames(cbscore), value = T)
+  cbscore = cbscore[setdiff(rownames(cbscore), c(dimers, tf_pairs)), ]
 
   # Extract matched control regions for each ATAC-seq consensus peak, based on matched residue frequencies
   # mapping_mat: (consensus peaks, control regions) sparse matrix
