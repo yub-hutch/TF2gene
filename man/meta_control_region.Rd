@@ -11,6 +11,6 @@ An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) w
 meta_control_region
 }
 \description{
-A tibble with columns chr, start, end, dist (distance to nearset TSS), freq_A, freq_C, freq_G, freq_T.
+A tibble with columns chr, start, end, dist (distance to nearest TSS), freq_A, freq_C, freq_G, freq_T.
 }
 \keyword{datasets}
