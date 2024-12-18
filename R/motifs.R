@@ -61,7 +61,7 @@ select_representative_motif_per_TF <- function(selected_pv_cbscore, mat_tf2motif
       # 2. If both are metaclusters, choose the one with more member motifs
       # 3. If both are singlets, or metaclusters with same number of member motifs, choose the one with P-value < 0.05 on more consensus peaks
       is_meta = substr(motifs, 1, 11) == 'metacluster'
-      if (sum(is_meta) == 1) selected_motif = motifs[c(is_meta1, is_meta2)]
+      if (sum(is_meta) == 1) selected_motif = motifs[is_meta]
       if (sum(is_meta) == 2) {
         n_member = TF2gene::meta_motif$num_inner_motif[match(motifs, TF2gene::meta_motif$motif)]
         if (n_member[1] != n_member[2]) {
