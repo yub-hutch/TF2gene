@@ -8,6 +8,7 @@ extract_matched_control_regions(
   meta_consensus_peak,
   meta_control_region,
   n,
+  same_chr,
   ncores
 )
 }
@@ -17,6 +18,8 @@ extract_matched_control_regions(
 \item{meta_control_region}{A tibble containing metadata for control regions.}
 
 \item{n}{Number of matched control regions to sample for each consensus peak.}
+
+\item{same_chr}{Logical indicating whether to select control regions from the same chromosome (TRUE) or any chromosome (FALSE).}
 
 \item{ncores}{An integer specifying the number of cores to use for parallel processing.}
 }
