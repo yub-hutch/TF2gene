@@ -12,6 +12,7 @@ TF2gene(
   dir_save,
   resume,
   ncores,
+  same_chr,
   num_control_per_peak = 1000,
   rules = c(0.05, 0.01, 0.25)
 )
@@ -30,6 +31,8 @@ TF2gene(
 \item{resume}{Logical indicating whether to resume the unfinished task.}
 
 \item{ncores}{Number of cores for parallel computation.}
+
+\item{same_chr}{Logical indicating whether to select control regions from the same chromosome (TRUE) or any chromosome (FALSE).}
 
 \item{num_control_per_peak}{Number of matched control regions per peak. Default is 1000.}
 

@@ -6,6 +6,7 @@
 #' @param fasta_consenesus_peaks Path to the FASTA file of ATAC-seq consensus peaks.
 #' @param dir_null_cbscore Directory containing null Cluster-Buster scores.
 #' @param peak2gene A matrix indicating the connection between ATAC-seq consensus peaks and genes.
+#' @param same_chr Logical indicating whether to select control regions from the same chromosome (TRUE) or any chromosome (FALSE).
 #' @param num_control_per_peak Number of matched control regions per peak. Default is 1000.
 #' @param rules A vector of rules for selecting motifs. Default is `c(0.05, 0.01, 0.25)`.
 #' @param dir_save Directory to save intermediate outputs, which will be loaded when the task is resumed.
@@ -16,7 +17,7 @@
 #' (2) a compact P-value matrix removing the TFs and genes with P-values of 2, (3) a compact Q-value matrix where Q-values are calculated for each TF.
 #' @export
 #'
-TF2gene <- function(feather_file, fasta_consenesus_peaks, dir_null_cbscore, peak2gene, dir_save, resume, ncores, num_control_per_peak = 1000, rules = c(0.05, 0.01, 0.25)) {
+TF2gene <- function(feather_file, fasta_consenesus_peaks, dir_null_cbscore, peak2gene, dir_save, resume, ncores, same_chr, num_control_per_peak = 1000, rules = c(0.05, 0.01, 0.25)) {
   # Read (motifs, peaks) Cluster-Buster score matrix
   cbscore = read_cbscore(feather_file)
 
@@ -39,6 +40,7 @@ TF2gene <- function(feather_file, fasta_consenesus_peaks, dir_null_cbscore, peak
       meta_consensus_peak = meta_consensus_peak,
       meta_control_region = TF2gene::meta_control_region,
       n = num_control_per_peak,
+      same_chr = same_chr,
       ncores = ncores
     )
     saveRDS(mapping_mat, file = file.path(dir_save, 'mapping_mat.rds'))
