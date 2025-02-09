@@ -14,6 +14,7 @@ result = TF2gene(
   peak2gene,
   dir_save,
   resume,
+  same_chr = F,
   num_control_per_peak = 1000,
   rules = c(0.05, 0.01, 0.25)
 )
