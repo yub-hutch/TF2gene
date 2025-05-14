@@ -8,6 +8,8 @@ TF2gene(
   feather_file,
   fasta_consenesus_peaks,
   dir_null_cbscore,
+  n_motif,
+  rule_motif,
   peak2gene,
   dir_save,
   resume,
@@ -24,6 +26,10 @@ TF2gene(
 
 \item{dir_null_cbscore}{Directory containing null Cluster-Buster scores.}
 
+\item{n_motif}{Number of representative motifs, 1 or 2.}
+
+\item{rule_motif}{If \code{n_motif = 2}, select two "similar" or "separated" motifs.}
+
 \item{peak2gene}{A matrix indicating the connection between ATAC-seq consensus peaks and genes.}
 
 \item{dir_save}{Directory to save intermediate outputs, which will be loaded when the task is resumed.}
@@ -37,6 +43,8 @@ TF2gene(
 \item{num_control_per_peak}{Number of matched control regions per peak. Default is 1000.}
 
 \item{rules}{A vector of rules for selecting motifs. Default is `c(0.05, 0.01, 0.25)`.}
+
+\item{mat_tf2motif}{A matrix indicating the connection between TFs and motifs. Default is `TF2gene::mat_tf2motif`.}
 }
 \value{
 A list containing (1) a P-value matrix for all TFs to all genes, where 2 indicates TF has no motifs or gene has no peaks,

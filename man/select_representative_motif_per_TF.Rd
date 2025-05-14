@@ -6,11 +6,17 @@
 \usage{
 select_representative_motif_per_TF(
   selected_pv_cbscore,
+  n_motif,
+  rule = c("similar", "separated"),
   mat_tf2motif = TF2gene::mat_tf2motif
 )
 }
 \arguments{
 \item{selected_pv_cbscore}{A P-value matrix for selected motifs to consensus peaks.}
+
+\item{n_motif}{Number of representative motifs, 1 or 2.}
+
+\item{rule}{If \code{n_motif = 2}, select two "similar" or "separated" motifs.}
 
 \item{mat_tf2motif}{A matrix indicating the connection between TFs and motifs. Default is `TF2gene::mat_tf2motif`.}
 }

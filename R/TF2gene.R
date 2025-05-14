@@ -5,6 +5,9 @@
 #' @param feather_file Path to the feather file containing Cluster-Buster scores.
 #' @param fasta_consenesus_peaks Path to the FASTA file of ATAC-seq consensus peaks.
 #' @param dir_null_cbscore Directory containing null Cluster-Buster scores.
+#' @param n_motif Number of representative motifs, 1 or 2.
+#' @param rule_motif If \code{n_motif = 2}, select two "similar" or "separated" motifs.
+#' @param mat_tf2motif A matrix indicating the connection between TFs and motifs. Default is `TF2gene::mat_tf2motif`.
 #' @param peak2gene A matrix indicating the connection between ATAC-seq consensus peaks and genes.
 #' @param same_chr Logical indicating whether to select control regions from the same chromosome (TRUE) or any chromosome (FALSE).
 #' @param num_control_per_peak Number of matched control regions per peak. Default is 1000.
@@ -17,7 +20,7 @@
 #' (2) a compact P-value matrix removing the TFs and genes with P-values of 2, (3) a compact Q-value matrix where Q-values are calculated for each TF.
 #' @export
 #'
-TF2gene <- function(feather_file, fasta_consenesus_peaks, dir_null_cbscore, peak2gene, dir_save, resume, ncores, same_chr, num_control_per_peak = 1000, rules = c(0.05, 0.01, 0.25)) {
+TF2gene <- function(feather_file, fasta_consenesus_peaks, dir_null_cbscore, n_motif, rule_motif, peak2gene, dir_save, resume, ncores, same_chr, num_control_per_peak = 1000, rules = c(0.05, 0.01, 0.25)) {
   # Read (motifs, peaks) Cluster-Buster score matrix
   cbscore = read_cbscore(feather_file)
 
@@ -74,8 +77,8 @@ TF2gene <- function(feather_file, fasta_consenesus_peaks, dir_null_cbscore, peak
   }
   selected_pv_cbscore = pv_cbscore[selected_motifs, ]
 
-  # Select one representative motif per TF
-  tf2motif = select_representative_motif_per_TF(selected_pv_cbscore = selected_pv_cbscore, mat_tf2motif = TF2gene::mat_tf2motif)
+  # Select representative motifs per TF
+  tf2motif = select_representative_motif_per_TF(selected_pv_cbscore = selected_pv_cbscore, n_motif = n_motif, rule = rule_motif, mat_tf2motif = TF2gene::mat_tf2motif)
 
   # Extract TF-peak P-value matrix
   pv_tf2peak = as.matrix(tf2motif %*% pmax(selected_pv_cbscore, 0.5 / num_control_per_peak))
